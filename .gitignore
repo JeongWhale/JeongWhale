@@ -17,6 +17,9 @@ dist/
 # generated card news (local outputs)
 outputs/
 
+# sandbox-only helpers (proxy preload etc.)
+.sandbox/
+
 # logs
 npm-debug.log*
 yarn-debug.log*
