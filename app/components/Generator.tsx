@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useRef, useState } from 'react';
 import { DropZone } from './DropZone';
 import { PlanInput } from './PlanInput';
@@ -198,7 +199,12 @@ export function Generator() {
   return (
     <main className="layout">
       <section className="panel panel--inputs">
-        <h1>인스타그램 카드뉴스 생성기</h1>
+        <h1>
+          인스타그램 카드뉴스 생성기
+          <Link href="/payroll" className="top-nav-link">
+            정산 계산기 →
+          </Link>
+        </h1>
         <p className="subtitle">
           템플릿 이미지를 스타일 레퍼런스로, 기획안을 콘텐츠로 사용해
           Gemini Nano Banana Pro로 카드뉴스를 만듭니다.
