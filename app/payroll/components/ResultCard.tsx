@@ -49,18 +49,36 @@ export function ResultCard({
 
       <Divider />
 
-      <Row label="− 카드 지출" value={-input.cardExpense} />
+      {[0, 1, 2].map((i) => {
+        const idx = i as 0 | 1 | 2;
+        return (
+          <Row
+            key={idx}
+            label={`− ${settings.cardLabels[idx]}`}
+            value={-(input.cardExpenses[idx] ?? 0)}
+          />
+        );
+      })}
       <Row
-        label={`− 작가 비용 (${input.writerJobCount}건 × ${formatKRW(
-          settings.writerRatePerJob,
-        )})`}
-        value={-result.writerCost}
+        label="카드 지출 합계"
+        value={-result.cardExpenseTotal}
+        variant="sum"
+      />
+
+      <Divider />
+
+      <Row label="− 작가 프리랜서 비용" value={-result.writerCost} />
+      <Row
+        label={`− 메인 보정가 (${
+          input.mainRetoucherJobCount
+        }건 × ${formatKRW(settings.mainRetoucherRatePerJob)})`}
+        value={-result.mainRetoucherCost}
       />
       <Row
-        label={`− 보정관 비용 (${input.retoucherJobCount}건 × ${formatKRW(
-          settings.retoucherRatePerJob,
-        )})`}
-        value={-result.retoucherCost}
+        label={`− 보조 보정가 (${
+          input.subRetoucherJobCount
+        }건 × ${formatKRW(settings.subRetoucherRatePerJob)})`}
+        value={-result.subRetoucherCost}
       />
       <Row label="− CS 고정 급여" value={-result.csCost} />
 
@@ -89,8 +107,9 @@ export function ResultCard({
       ) : null}
 
       <div className="payroll-result__footer">
-        설정 스냅샷 · 작가 {formatKRW(settings.writerRatePerJob)}/건 · 보정관{' '}
-        {formatKRW(settings.retoucherRatePerJob)}/건 · CS{' '}
+        설정 스냅샷 · 메인 보정가{' '}
+        {formatKRW(settings.mainRetoucherRatePerJob)}/건 · 보조 보정가{' '}
+        {formatKRW(settings.subRetoucherRatePerJob)}/건 · CS{' '}
         {formatKRW(settings.csMonthlySalary)} · 직원 분배 {rate}%
       </div>
     </div>

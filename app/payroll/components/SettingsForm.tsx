@@ -20,6 +20,16 @@ export function SettingsForm({ initial, onSaved }: Props) {
     value: PayrollSettings[K],
   ) => setDraft({ ...draft, [key]: value });
 
+  const setCardLabel = (index: 0 | 1 | 2, label: string) => {
+    const next: [string, string, string] = [...draft.cardLabels] as [
+      string,
+      string,
+      string,
+    ];
+    next[index] = label;
+    set('cardLabels', next);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const saved = saveSettings(draft);
@@ -30,27 +40,52 @@ export function SettingsForm({ initial, onSaved }: Props) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2>프리랜서 단가</h2>
+      <h2>카드 이름</h2>
+      {[0, 1, 2].map((i) => {
+        const idx = i as 0 | 1 | 2;
+        return (
+          <div className="field" key={idx}>
+            <label
+              className="field__label"
+              htmlFor={`card-label-${idx}`}
+            >
+              카드 {idx + 1} 이름
+            </label>
+            <input
+              id={`card-label-${idx}`}
+              type="text"
+              className="field__number"
+              value={draft.cardLabels[idx]}
+              placeholder={`카드 ${idx + 1}`}
+              onChange={(e) => setCardLabel(idx, e.target.value)}
+            />
+          </div>
+        );
+      })}
+
+      <h2>보정가 단가</h2>
       <div className="field">
-        <label className="field__label" htmlFor="writer-rate">
-          작가 건당 단가
+        <label className="field__label" htmlFor="main-retoucher-rate">
+          메인 보정가 건당 단가
         </label>
         <MoneyInput
-          id="writer-rate"
-          value={draft.writerRatePerJob}
-          onChange={(v) => set('writerRatePerJob', v)}
+          id="main-retoucher-rate"
+          value={draft.mainRetoucherRatePerJob}
+          onChange={(v) => set('mainRetoucherRatePerJob', v)}
         />
       </div>
       <div className="field">
-        <label className="field__label" htmlFor="retoucher-rate">
-          보정관 건당 단가
+        <label className="field__label" htmlFor="sub-retoucher-rate">
+          보조 보정가 건당 단가
         </label>
         <MoneyInput
-          id="retoucher-rate"
-          value={draft.retoucherRatePerJob}
-          onChange={(v) => set('retoucherRatePerJob', v)}
+          id="sub-retoucher-rate"
+          value={draft.subRetoucherRatePerJob}
+          onChange={(v) => set('subRetoucherRatePerJob', v)}
         />
       </div>
+
+      <h2>CS 프리랜서</h2>
       <div className="field">
         <label className="field__label" htmlFor="cs-salary">
           CS 월 고정 급여
@@ -60,6 +95,10 @@ export function SettingsForm({ initial, onSaved }: Props) {
           value={draft.csMonthlySalary}
           onChange={(v) => set('csMonthlySalary', v)}
         />
+        <p className="payroll-hint">
+          작가 프리랜서는 서비스별 단가가 달라 계산기에서 월 총액을 직접
+          입력합니다.
+        </p>
       </div>
 
       <h2>직원 분배</h2>

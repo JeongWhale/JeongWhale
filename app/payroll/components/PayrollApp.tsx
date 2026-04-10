@@ -17,9 +17,10 @@ function emptyInput(month: string): MonthlyInput {
     month,
     profileRevenue: 0,
     fashionRevenue: 0,
-    cardExpense: 0,
-    writerJobCount: 0,
-    retoucherJobCount: 0,
+    cardExpenses: [0, 0, 0],
+    writerCost: 0,
+    mainRetoucherJobCount: 0,
+    subRetoucherJobCount: 0,
     memo: '',
   };
 }
@@ -94,7 +95,11 @@ export function PayrollApp() {
           </div>
         ) : null}
 
-        <CalculatorForm value={input} onChange={setInput} />
+        <CalculatorForm
+          value={input}
+          onChange={setInput}
+          settings={settings}
+        />
 
         <div className="payroll-actions">
           <button
