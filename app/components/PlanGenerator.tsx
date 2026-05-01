@@ -98,6 +98,7 @@ export function PlanGenerator({
         setBrandId={setBrandId}
         selectedVersion={brandToneVersion}
         setSelectedVersion={setBrandToneVersion}
+        draftProvider={provider}
         disabled={stepDisabled}
       />
 
