@@ -3,7 +3,7 @@ import { GoogleGenAI, Type } from '@google/genai';
 import type { Provider } from '@/app/lib/types';
 
 const CLAUDE_MODEL = 'claude-sonnet-4-5-20250929';
-const GEMINI_TEXT_MODEL = 'gemini-2.5-pro';
+const GEMINI_TEXT_MODEL = 'gemini-2.5-flash';
 
 export interface JSONSchema {
   type: 'object' | 'array' | 'string' | 'number' | 'boolean' | 'integer';
@@ -110,6 +110,9 @@ async function runGemini<T>(opts: RunJSONOptions<T>): Promise<T> {
   }
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+  // Gemini 2.5 models use internal thinking tokens that count against
+  // maxOutputTokens. We pad generously so structured JSON is never truncated.
+  const visibleBudget = opts.maxOutputTokens ?? 4096;
   const resp = await ai.models.generateContent({
     model: GEMINI_TEXT_MODEL,
     contents: [{ role: 'user', parts: [{ text: opts.user }] }],
@@ -117,7 +120,7 @@ async function runGemini<T>(opts: RunJSONOptions<T>): Promise<T> {
       systemInstruction: opts.system,
       responseMimeType: 'application/json',
       responseSchema: jsonSchemaToGemini(opts.schema) as never,
-      maxOutputTokens: opts.maxOutputTokens ?? 4096,
+      maxOutputTokens: visibleBudget * 2 + 4096,
     },
   });
 

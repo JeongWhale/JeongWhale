@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { runJSON, SkillError } from './client';
 import type { ResearchFinding, ResearchResult, ResearchSource } from '@/app/lib/types';
 
-const GROUNDED_MODEL = 'gemini-2.5-pro';
+const GROUNDED_MODEL = 'gemini-2.5-flash';
 
 interface SubQueryPlan {
   subQueries: string[];
@@ -54,7 +54,8 @@ async function searchOnce(query: string): Promise<RawGroundedResult> {
       systemInstruction:
         '당신은 한국어 웹 리서치 어시스턴트입니다. 주어진 쿼리에 대한 핵심 사실, 통계, 최근 트렌드를 3~6개의 짧은 한국어 문단으로 정리하세요. 각 사실에 출처를 명확히 연결하고, 추측은 피하세요.',
       tools: [{ googleSearch: {} }],
-      maxOutputTokens: 2048,
+      // Padding for thinking tokens on 2.5 models.
+      maxOutputTokens: 8192,
     },
   });
 
