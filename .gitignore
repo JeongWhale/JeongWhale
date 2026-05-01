@@ -17,6 +17,9 @@ dist/
 # generated card news (local outputs)
 outputs/
 
+# brand tone documents (local, versioned)
+brand-tones/
+
 # sandbox-only helpers (proxy preload etc.)
 .sandbox/
 

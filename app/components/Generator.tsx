@@ -3,6 +3,8 @@
 import { useCallback, useRef, useState } from 'react';
 import { DropZone } from './DropZone';
 import { PlanInput } from './PlanInput';
+import { PlanGenerator } from './PlanGenerator';
+import { ReelsResult } from './ReelsResult';
 import { ResultsPanel } from './ResultsPanel';
 import {
   fileToBase64,
@@ -14,6 +16,7 @@ import type {
   CardResultState,
   GenerateRequest,
   GenerateResponse,
+  ReelsPlan,
   TemplateImage,
 } from '@/app/lib/types';
 
@@ -26,8 +29,8 @@ export function Generator() {
   const [results, setResults] = useState<CardResultState[]>([]);
   const [busy, setBusy] = useState(false);
   const [topError, setTopError] = useState<string | null>(null);
+  const [reelsPlan, setReelsPlan] = useState<ReelsPlan | null>(null);
 
-  // Cache encoded templates per session so retries don't re-read files.
   const encodedTemplatesRef = useRef<TemplateImage[] | null>(null);
 
   const encodeTemplates = useCallback(async (): Promise<TemplateImage[]> => {
@@ -146,7 +149,6 @@ export function Generator() {
     }
 
     for (let i = 1; i <= totalCards; i++) {
-      // Sequential — Nano Banana Pro is heavy and we want stable rate.
       // eslint-disable-next-line no-await-in-loop
       await generateOne(sId, i, totalCards, aspectRatio, planText, encoded);
     }
@@ -198,16 +200,26 @@ export function Generator() {
   return (
     <main className="layout">
       <section className="panel panel--inputs">
-        <h1>인스타그램 카드뉴스 생성기</h1>
+        <h1>인스타그램 기획안 + 카드뉴스 생성기</h1>
         <p className="subtitle">
-          템플릿 이미지를 스타일 레퍼런스로, 기획안을 콘텐츠로 사용해
-          Gemini Nano Banana Pro로 카드뉴스를 만듭니다.
+          브랜드 톤을 학습한 다단계 스킬 파이프라인이 캐러셀/릴스 기획안을 만들고,
+          캐러셀은 그대로 Gemini Nano Banana Pro로 카드 이미지까지 이어집니다.
         </p>
 
-        <h2>1. 템플릿 첨부</h2>
+        <PlanGenerator
+          totalCards={totalCards}
+          setTotalCards={setTotalCards}
+          aspectRatio={aspectRatio}
+          setAspectRatio={setAspectRatio}
+          setPlanText={setPlanText}
+          setReelsPlan={setReelsPlan}
+          disabled={busy}
+        />
+
+        <h2>4. 템플릿 첨부 (캐러셀)</h2>
         <DropZone files={templates} setFiles={setTemplates} disabled={busy} />
 
-        <h2>2. 기획안 작성</h2>
+        <h2>5. 기획안 (자동 채움 / 직접 편집 가능)</h2>
         <PlanInput
           planText={planText}
           setPlanText={setPlanText}
@@ -230,12 +242,18 @@ export function Generator() {
         </button>
       </section>
 
-      <ResultsPanel
-        results={results}
-        sessionId={sessionId}
-        onRetry={handleRetry}
-        busy={busy}
-      />
+      <section className="panel-right">
+        {reelsPlan ? (
+          <ReelsResult plan={reelsPlan} />
+        ) : (
+          <ResultsPanel
+            results={results}
+            sessionId={sessionId}
+            onRetry={handleRetry}
+            busy={busy}
+          />
+        )}
+      </section>
     </main>
   );
 }
